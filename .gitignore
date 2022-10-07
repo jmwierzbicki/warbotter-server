@@ -2,6 +2,8 @@
 # compiled output
 /dist
 /node_modules
+/warbotter_client/node_modules
+/warbotter_client/cache
 
 # Logs
 logs
