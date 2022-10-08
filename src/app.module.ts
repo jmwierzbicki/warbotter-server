@@ -1,11 +1,12 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BotService } from './bot-service/bot.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseService } from './database/database.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Cat, CatSchema } from "./database/models/cat";
+import { Cat, CatSchema } from './database/models/cat';
+import { LoggerMiddleware } from './bot-service/discord.middleware';
 
 @Module({
   imports: [
@@ -16,4 +17,8 @@ import { Cat, CatSchema } from "./database/models/cat";
   controllers: [AppController],
   providers: [AppService, BotService, DatabaseService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('interactions');
+  }
+}
