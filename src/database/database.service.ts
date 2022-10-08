@@ -1,21 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { Sequelize } from 'sequelize';
+
 @Injectable()
 export class DatabaseService {
-  public db: Sequelize;
+  public db;
 
   constructor() {
-    this.db = new Sequelize(
-      process.env.DB_NAME,
-      process.env.DB_USER,
-      process.env.DB_PASS,
-      {
-        dialect: 'mysql',
-        host: process.env.DB_HOST,
-      },
-    );
-    this.db.authenticate().then(() => {
-      console.log('Connection has been established successfully.');
-    });
+    // this.db = new Sequelize({
+    //   database: process.env.DB_NAME,
+    //   dialect: 'mysql',
+    //   username: process.env.DB_USER,
+    //   password: process.env.DB_PASS,
+    //   host: process.env.DB_HOST,
+    //   models: models, // or [Player, Team],
+    // });
+    // this.db.authenticate().then(async () => {
+    //   console.log('Connection has been established successfully.');
+    //
+    //   for (const model of models) {
+    //     await model.sync({ alter: true });
+    //   }
+    // });
   }
 }
