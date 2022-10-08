@@ -4,9 +4,15 @@ import { AppService } from './app.service';
 import { BotService } from './bot-service/bot.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseService } from './database/database.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Cat, CatSchema } from "./database/models/cat";
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [
+    ConfigModule.forRoot(),
+    MongooseModule.forRoot(process.env.MONGODB_CONNECTION_STRING),
+    MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]),
+  ],
   controllers: [AppController],
   providers: [AppService, BotService, DatabaseService],
 })

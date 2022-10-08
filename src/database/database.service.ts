@@ -1,10 +1,20 @@
 import { Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Cat, CatDocument } from './models/cat';
 
 @Injectable()
 export class DatabaseService {
   public db;
 
-  constructor() {
+  constructor(@InjectModel(Cat.name) private catModel: Model<CatDocument>) {
+    //
+    // const user = new User({
+    //   name: 'Bill',
+    //   email: 'bill@initech.com',
+    //   avatar: 'https://i.imgur.com/dM7Thhn.png',
+    // });
+    // user.save();
     // this.db = new Sequelize({
     //   database: process.env.DB_NAME,
     //   dialect: 'mysql',
