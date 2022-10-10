@@ -1,26 +1,35 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BotService } from './bot-service/bot.service';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseService } from './database/database.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Cat, CatSchema } from './database/models/cat';
 import { LoggerMiddleware } from './bot-service/discord.middleware';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGODB_CONNECTION_STRING),
-    MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]),
+    TypeOrmModule.forRoot({
+      type: 'mongodb',
+      url: process.env.MONGODB_CONNECTION_STRING,
+
+      autoLoadEntities: true,
+
+      // Only enable this option if your application is in development,
+      // otherwise use TypeORM migrations to sync entity schemas:
+      // https://typeorm.io/#/migrations
+      synchronize: true,
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'frontend'),
     }),
+    UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService, BotService, DatabaseService],
+  providers: [AppService, BotService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
