@@ -23,7 +23,7 @@ export class AppController {
     @InjectModel(Cat.name) private catModel: Model<CatDocument>,
   ) {}
 
-  @Get('x')
+  @Get()
   async getHello(): Promise<Cat[]> {
     // const createCatDto: CreateCatDto = {
     //   age: 9,
