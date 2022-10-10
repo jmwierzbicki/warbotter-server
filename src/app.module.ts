@@ -7,12 +7,17 @@ import { DatabaseService } from './database/database.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Cat, CatSchema } from './database/models/cat';
 import { LoggerMiddleware } from './bot-service/discord.middleware';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGODB_CONNECTION_STRING),
     MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'frontend'),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, BotService, DatabaseService],
