@@ -15,7 +15,12 @@ import { UsersModule } from './users/users.module';
     TypeOrmModule.forRoot({
       type: 'mongodb',
       url: process.env.MONGODB_CONNECTION_STRING,
+
       autoLoadEntities: true,
+
+      // Only enable this option if your application is in development,
+      // otherwise use TypeORM migrations to sync entity schemas:
+      // https://typeorm.io/#/migrations
       synchronize: true,
     }),
     ServeStaticModule.forRoot({
