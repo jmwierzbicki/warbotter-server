@@ -13,6 +13,7 @@ import {
 import { BotService } from './bot-service/bot.service';
 import { InteractionResponseType, InteractionType } from 'discord-interactions';
 import { Request } from 'express';
+import { Public } from './auth/jwt-auth.guard';
 
 @Controller()
 export class AppController {
@@ -23,6 +24,7 @@ export class AppController {
     @InjectModel(Cat.name) private catModel: Model<CatDocument>,
   ) {}
 
+  @Public()
   @Get()
   async getHello(): Promise<Cat[]> {
     // const createCatDto: CreateCatDto = {
