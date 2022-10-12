@@ -1,8 +1,6 @@
 import { Controller, Get, Post, Req } from '@nestjs/common';
 import { AppService } from './app.service';
-import { DatabaseService } from './database/database.service';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cat, CatDocument } from './database/models/cat';
 import { Model } from 'mongoose';
 import { BaseGuildTextChannel, GatewayIntentBits, Routes } from 'discord.js';
 import { BotService } from './bot-service/bot.service';
@@ -13,26 +11,24 @@ import { Public } from './auth/jwt-auth.guard';
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private dbService: DatabaseService,
     private botService: BotService,
-    @InjectModel(Cat.name) private catModel: Model<CatDocument>,
   ) {}
 
-  @Public()
-  @Get()
-  async getHello(): Promise<Cat[]> {
-    // const createCatDto: CreateCatDto = {
-    //   age: 9,
-    //   name: 'Koteł',
-    //   breed: 'Europejski',
-    // };
-    //
-    // const createdCat = new this.catModel(createCatDto);
-    // await createdCat.save();
-
-    console.log('request!');
-    return this.catModel.find().exec();
-  }
+  // @Public()
+  // @Get()
+  // async getHello(): Promise<Cat[]> {
+  //   // const createCatDto: CreateCatDto = {
+  //   //   age: 9,
+  //   //   name: 'Koteł',
+  //   //   breed: 'Europejski',
+  //   // };
+  //   //
+  //   // const createdCat = new this.catModel(createCatDto);
+  //   // await createdCat.save();
+  //
+  //   console.log('request!');
+  //   return this.catModel.find().exec();
+  // }
 
   @Get('test-bot')
   async testBot() {
@@ -73,10 +69,8 @@ export class AppController {
       data: {
         content: '👍',
         ephemeral: true,
-
       },
       ephemeral: true,
-
     };
   }
 
