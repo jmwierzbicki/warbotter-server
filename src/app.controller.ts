@@ -1,18 +1,12 @@
-import { Controller, Get, Post, RawBodyRequest, Req } from '@nestjs/common';
+import { Controller, Get, Post, Req } from '@nestjs/common';
 import { AppService } from './app.service';
 import { DatabaseService } from './database/database.service';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cat, CatDocument, CreateCatDto } from './database/models/cat';
+import { Cat, CatDocument } from './database/models/cat';
 import { Model } from 'mongoose';
-import {
-  BaseGuildTextChannel,
-  Client,
-  GatewayIntentBits,
-  Routes,
-} from 'discord.js';
+import { BaseGuildTextChannel, GatewayIntentBits, Routes } from 'discord.js';
 import { BotService } from './bot-service/bot.service';
 import { InteractionResponseType, InteractionType } from 'discord-interactions';
-import { Request } from 'express';
 import { Public } from './auth/jwt-auth.guard';
 
 @Controller()
@@ -63,9 +57,11 @@ export class AppController {
     this.botService.registerCommands();
   }
 
+  @Public()
   @Post('interactions')
   interactions(@Req() req) {
-    console.log(req.body.type);
+    console.log('bot interraction');
+    console.log(req.body);
     if (req.body.type === InteractionType.PING) {
       return {
         type: InteractionResponseType.PONG,
@@ -76,7 +72,11 @@ export class AppController {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
         content: '👍',
+        ephemeral: true,
+
       },
+      ephemeral: true,
+
     };
   }
 

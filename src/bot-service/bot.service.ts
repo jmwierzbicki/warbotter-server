@@ -19,12 +19,32 @@ export class BotService {
       .setDescription('Invite your character to this channel'),
   ].map((command) => command.toJSON());
 
-  constructor() {}
+  constructor() {
+    this.registerListeners();
+    this.enableBot();
+  }
+
+  async registerListeners() {
+    console.log('registering listeners')
+    this.client.on('interactionCreate', async (interaction) => {
+      if (!interaction.isChatInputCommand()) return;
+
+      if (interaction.commandName === 'invite') {
+        await interaction.reply('Pong!', );
+        await interaction.editReply('Pong again!');
+      }
+    });
+  }
+
+  async enableBot() {
+    console.log('logging in to discord')
+    this.client.login(process.env.DISCORD_TOKEN);
+  }
 
   async registerCommands() {
-    console.log('a')
+    console.log('a');
     await this.deleteCommands();
-    console.log('a')
+    console.log('a');
 
     const data = (await this.rest.put(
       Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
