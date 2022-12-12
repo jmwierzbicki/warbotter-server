@@ -1,11 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+
+export enum RoleEnum {
+  User,
+  GM,
+  Admin,
+}
 
 export type UserDocument = User & Document;
 
 @Schema()
 export class User extends Document {
-  _id: string;
+  _id: Types.ObjectId;
 
   @Prop({
     required: true,
@@ -13,6 +19,9 @@ export class User extends Document {
     index: true,
   })
   email: string;
+
+  @Prop({ type: Number, enum: RoleEnum, default: RoleEnum.User })
+  role: number;
 
   @Prop({
     required: true,
@@ -29,5 +38,3 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
-

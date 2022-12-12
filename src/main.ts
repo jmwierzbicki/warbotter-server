@@ -6,6 +6,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
+  app.setGlobalPrefix('api');
+
   const config = new DocumentBuilder()
     .setTitle('Warbotter API')
     .setDescription('The Warbotter API description')
@@ -13,8 +15,12 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('openapi', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
-  await app.listen(3000);
+  await app.listen(3001, '0.0.0.0');
 }
 bootstrap();

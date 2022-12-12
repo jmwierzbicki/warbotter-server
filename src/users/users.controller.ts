@@ -15,7 +15,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('Users')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {

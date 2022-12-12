@@ -1,12 +1,20 @@
 import { Controller, Get, Post, Req } from '@nestjs/common';
 import { AppService } from './app.service';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { BaseGuildTextChannel, GatewayIntentBits, Routes } from 'discord.js';
+import {
+  AttachmentBuilder,
+  BaseGuildTextChannel,
+  EmbedBuilder,
+  // GatewayIntentBits,
+} from 'discord.js';
 import { BotService } from './bot-service/bot.service';
 import { InteractionResponseType, InteractionType } from 'discord-interactions';
 import { Public } from './auth/jwt-auth.guard';
+import { ResponseBuilder } from './bot-service/response-builder';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import fs from 'fs';
+import { createCanvas, loadImage } from '@napi-rs/canvas';
 
+@ApiBearerAuth()
 @Controller()
 export class AppController {
   constructor(
@@ -29,6 +37,13 @@ export class AppController {
   //   console.log('request!');
   //   return this.catModel.find().exec();
   // }
+
+  @Public()
+  @Get()
+  async helloWorld() {
+    console.log('hello!');
+    return 'hello';
+  }
 
   @Get('test-bot')
   async testBot() {
@@ -56,40 +71,63 @@ export class AppController {
   @Public()
   @Post('interactions')
   interactions(@Req() req) {
-    console.log('bot interraction');
-    console.log(req.body);
     if (req.body.type === InteractionType.PING) {
       return {
         type: InteractionResponseType.PONG,
       };
     }
+    console.log(req.body.type);
+    console.log(req.body.data);
 
-    return {
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        content: '👍',
-        ephemeral: true,
-      },
-      ephemeral: true,
-    };
+    const res = new ResponseBuilder(
+      InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    )
+      .setContent('+1')
+      .addButton('test1', 'CusTom IDDD')
+      .setEphemeral();
+
+    return res;
   }
 
   @Get('send')
   async sendMessage() {
-    const webhooks = await this.botService.rest.get(
-      Routes.channelWebhooks('547839876784062507'),
+    const embed = new EmbedBuilder()
+      .setTitle('Some Title')
+      .addFields([
+        {
+          name: 'Regular field title',
+          value: 'Some value here',
+        },
+        { name: 'Regular field title', value: 'another value here' },
+      ])
+      .setColor(0x00ffff);
+
+    const channelID = '547839876784062507';
+    const webhook = await this.botService.findOrCreateWebhookForChannel(
+      channelID,
+      {
+        name: 'Jack DEsparrow',
+      },
     );
+    const webhookClient = this.botService.getWebhookClient(webhook);
 
-    console.log(webhooks);
+    const canvas = createCanvas(700, 250);
+    const context = canvas.getContext('2d');
+    const image = fs.readFileSync(__dirname + '/../wallpaper.png');
+    const background = await loadImage(image);
+    context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-    // this.botService.rest.post(Routes.channelMessages('547839876784062507'), {
-    //   body: {
-    //     content: 'hello world!',
-    //
-    //   },
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data',
-    //   },
-    // });
+    // Use the helpful Attachment class structure to process the file for you
+    const attachment = await new AttachmentBuilder(await canvas.encode('png'), {
+      name: 'wallpaper.png',
+    });
+
+    await webhookClient.send({
+      content: 'Webhook test',
+      embeds: [embed],
+      files: [attachment],
+    });
+
+    console.log(webhook);
   }
 }

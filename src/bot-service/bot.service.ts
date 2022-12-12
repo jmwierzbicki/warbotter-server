@@ -5,6 +5,9 @@ import {
   Routes,
   REST,
   SlashCommandBuilder,
+  Webhook,
+  RESTPostAPIChannelWebhookJSONBody,
+  APIWebhook, WebhookClient
 } from 'discord.js';
 
 @Injectable()
@@ -19,26 +22,10 @@ export class BotService {
       .setDescription('Invite your character to this channel'),
   ].map((command) => command.toJSON());
 
-  constructor() {
-    this.registerListeners();
-    this.enableBot();
-  }
+  constructor() {}
 
-  async registerListeners() {
-    console.log('registering listeners')
-    this.client.on('interactionCreate', async (interaction) => {
-      if (!interaction.isChatInputCommand()) return;
-
-      if (interaction.commandName === 'invite') {
-        await interaction.reply('Pong!', );
-        await interaction.editReply('Pong again!');
-      }
-    });
-  }
-
-  async enableBot() {
-    console.log('logging in to discord')
-    this.client.login(process.env.DISCORD_TOKEN);
+  getWebhookClient(webhook): WebhookClient {
+    return new WebhookClient({ id: webhook.id, token: webhook.token });
   }
 
   async registerCommands() {
@@ -67,5 +54,30 @@ export class BotService {
       }
       resolve(true);
     });
+  }
+
+  async getWebhooksForChannel(channelID): Promise<APIWebhook[]> {
+    return (await this.rest.get(
+      Routes.channelWebhooks('547839876784062507'),
+    )) as APIWebhook[];
+  }
+  async createWebhookForChannel(
+    channelID,
+    webhook: RESTPostAPIChannelWebhookJSONBody,
+  ): Promise<APIWebhook> {
+    return (await this.rest.post(Routes.channelWebhooks(channelID), {
+      body: webhook,
+    })) as APIWebhook;
+  }
+
+  async findOrCreateWebhookForChannel(
+    channelId: string,
+    webhookBody: RESTPostAPIChannelWebhookJSONBody,
+  ): Promise<APIWebhook> {
+    const webhook =
+      (await this.getWebhooksForChannel(channelId)).find(
+        (hook) => hook.user.username === 'Warbotter',
+      ) || (await this.createWebhookForChannel(channelId, webhookBody));
+    return webhook;
   }
 }
