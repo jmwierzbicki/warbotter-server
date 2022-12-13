@@ -24,6 +24,9 @@
     "node": "16.x"
   },
   "dependencies": {
+    "@mikro-orm/core": "^5.6.0",
+    "@mikro-orm/mongodb": "^5.6.0",
+    "@mikro-orm/nestjs": "^5.1.2",
     "@napi-rs/canvas": "^0.1.30",
     "@napi-rs/canvas-linux-x64-gnu": "^0.1.30",
     "@nestjs/common": "^9.0.0",
@@ -48,8 +51,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
-    "rimraf": "^3.0.2",
-    "typeorm": "^0.3.11"
+    "rimraf": "^3.0.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
